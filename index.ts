@@ -1,10 +1,13 @@
 import {Client} from "discord.js";
 import * as secret from "./secret.json"
 import {prefix} from "./config.json";
+import {Commands} from "./commands/command";
+import commandMap = Commands.commandMap;
 
 const client: Client = new Client();
 
 client.once('ready', () => {
+	client.user.setActivity("the stalk market", {type: "PLAYING"});
 	console.log("ready!");
 })
 
@@ -14,8 +17,8 @@ client.on('message', message => {
 	const args = message.content.slice(prefix.length).split(/ +/);
 	const command = args.shift().toLowerCase();
 
-	if (command === "ping") {
-		message.channel.send(`username: ${message.author.username}, snowflake: ${message.author.id}, mentions: ${JSON.stringify(message.mentions.users)}`);
+	if (command in commandMap) {
+		commandMap[command].execute(message, args);
 	}
 })
 
