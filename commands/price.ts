@@ -1,7 +1,7 @@
 import {Command, Commands} from "./command";
 import {Message} from "discord.js";
 import {PriceHistoryService} from "../services/priceHistoryService";
-import {PriceHistory} from "../models/priceHistory";
+import {Pattern, patternList, PriceHistory} from "../models/priceHistory";
 import getPriceHistory = PriceHistoryService.getPriceHistory;
 import {TimeService} from "../services/timeService";
 import savePriceHistory = PriceHistoryService.savePriceHistory;
@@ -13,11 +13,26 @@ export class Price implements Command {
 	public async execute(message: Message, args: string[]) {
 		let currentArg = 0
 
+		let newPattern: Pattern;
 		let newPrice = parseInt(args[currentArg])
+		let settingPattern: boolean = false;
 		let settingPrice: boolean = false;
 		if (!isNaN(newPrice)) {
 			currentArg++;
 			settingPrice = true;
+		} else {
+			const lowerCasePattern = args[currentArg]?.toLowerCase();
+			if (lowerCasePattern.startsWith('u')) {
+				newPattern = undefined;
+				settingPattern = true;
+			} else {
+				let matchingPatterns = patternList.filter(p => p.toLowerCase().startsWith(lowerCasePattern));
+				if (matchingPatterns.length === 1) {
+					newPattern = matchingPatterns[0];
+					settingPattern = true;
+				}
+			}
+
 		}
 
 		let targetTime: number;
@@ -61,16 +76,20 @@ export class Price implements Command {
 		}
 
 		let priceHistory: PriceHistory = await getPriceHistory(targetUserId);
+		let baseMessage: string;
 		if (settingPrice) {
 			priceHistory.prices[targetTime] = newPrice;
 			await savePriceHistory(targetUserId, priceHistory);
+			baseMessage = `Setting price for ${targetUserName} on ${timeNames[targetTime]} to ${newPrice}`
+		} else if (settingPattern) {
+			priceHistory.previousPattern = newPattern;
+			await savePriceHistory(targetUserId, priceHistory);
+			baseMessage = `Setting previous pattern for ${targetUserName} to ${newPattern}`;
+		} else {
+			baseMessage = `Getting price history for ${targetUserName}`;
 		}
 
-		let baseMessage: string = settingPrice
-			? `Setting price for ${targetUserName} on ${timeNames[targetTime]} to ${newPrice}\n`
-			: `Getting price history for ${targetUserName}\n`;
-		
-		message.channel.send(baseMessage + priceHistory.getMessage());
+		message.channel.send(`${baseMessage}\n${priceHistory.getMessage()}`);
 
 	}
 }
