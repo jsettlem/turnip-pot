@@ -1,7 +1,7 @@
 import {Message} from "discord.js";
 
 export interface Command {
-	execute(message: Message, args: string[]): Promise<Message> | void
+	execute(message: Message, args: string[])
 }
 
 export namespace Commands {
@@ -21,5 +21,4 @@ export namespace Commands {
 }
 
 export * from './help'
-export * from './ping'
-export * from './pong'
+export * from './price'
