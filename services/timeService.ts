@@ -1,7 +1,6 @@
 import moment = require('moment')
 
 export namespace TimeService {
-	// const moment = require("moment")
 
 	export class Week {
 		constructor(public year: number, public week: number) {
