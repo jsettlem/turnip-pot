@@ -1,0 +1,3 @@
+[submodule "predictor/ac-nh-turnip-prices"]
+	path = predictor/ac-nh-turnip-prices
+	url = https://github.com/jsettlem/ac-nh-turnip-prices.git

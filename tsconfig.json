@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "allowJs": true,
     "experimentalDecorators": true,
     "module": "commonjs",
     "target": "es6",
@@ -9,6 +10,12 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true
   },
+  "include": [
+    "**/*.ts",
+    "config.json",
+    "secret.json",
+    "predictor/ac-nh-turnip-prices/js/predictions.js"
+  ],
   "exclude": [
     "node_modules"
   ]

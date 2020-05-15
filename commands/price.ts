@@ -11,23 +11,26 @@ import timeNames = PriceHistoryService.timeNames;
 @Commands.register("price")
 export class Price implements Command {
 	public async execute(message: Message, args: string[]) {
-		let currentArg = 0
 
+		let currentArg = 0
 		let newPattern: Pattern;
 		let newPrice = parseInt(args[currentArg])
 		let settingPattern: boolean = false;
 		let settingPrice: boolean = false;
+
 		if (!isNaN(newPrice)) {
 			currentArg++;
 			settingPrice = true;
 		} else {
 			const lowerCasePattern = args[currentArg]?.toLowerCase();
 			if (lowerCasePattern.startsWith('u')) {
+				currentArg++;
 				newPattern = undefined;
 				settingPattern = true;
 			} else {
 				let matchingPatterns = patternList.filter(p => p.toLowerCase().startsWith(lowerCasePattern));
 				if (matchingPatterns.length === 1) {
+					currentArg++;
 					newPattern = matchingPatterns[0];
 					settingPattern = true;
 				}
@@ -52,7 +55,7 @@ export class Price implements Command {
 					}
 				}
 				currentArg++;
-				if (commandTime) {
+				if (commandTime.startsWith("am") || commandTime.startsWith("pm")) {
 					currentArg++;
 				}
 			} else {
@@ -89,7 +92,8 @@ export class Price implements Command {
 			baseMessage = `Getting price history for ${targetUserName}`;
 		}
 
-		message.channel.send(`${baseMessage}\n${priceHistory.getMessage()}`);
+		message.channel.send(`${baseMessage}\n${priceHistory.getMessage()}\n\`\`\`\n${priceHistory.predict()}\`\`\``);
+		priceHistory.predict();
 
 	}
 }
