@@ -8,7 +8,10 @@ import {PriceHistory} from "../models/priceHistory";
 import {getModelForClass} from "@typegoose/typegoose";
 
 
+
 export namespace PriceHistoryService {
+
+	import Week = TimeService.Week;
 
 	export const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 	export const timeNames = [dayNames[0].substr(0, 2)]
@@ -17,6 +20,10 @@ export namespace PriceHistoryService {
 	mongoose.connect(config.db);
 
 	let priceHistoryModel = getModelForClass(PriceHistory);
+
+	export async function getAllPriceHistories(week: Week): Promise<PriceHistory[]> {
+		return priceHistoryModel.find({"currentWeek.week": week.week, "currentWeek.year": week.year});
+	}
 
 	export async function getPriceHistory(userId: Snowflake, userName: string): Promise<PriceHistory> {
 		let history = await priceHistoryModel.findOne({userId: userId});
@@ -37,4 +44,9 @@ export namespace PriceHistoryService {
 	export async function savePriceHistory(priceHistory: PriceHistory) {
 		await priceHistoryModel.findOneAndUpdate({userId: priceHistory.userId}, priceHistory, {upsert: true}).then();
 	}
+
+	export function priceToString(p) {
+		return p === 0 ? "" : p;
+	}
+
 }

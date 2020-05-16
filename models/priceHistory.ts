@@ -77,12 +77,13 @@ export class PriceHistory {
 	}
 
 	public asASCIITable(): string {
+
 		let table = new AsciiTable(`${this.userName} - Previous: ${this.previousPattern ?? 'unknown'}`);
-		let convertNumber = p => p === 0 ? "" : p;
+
 		table
 			.setHeading("", ...PriceHistoryService.dayNames.map(d => d.substr(0, 2)))
-			.addRow("AM", convertNumber(this.prices[0]), ...this.prices.slice(1).filter((e, i) => i % 2 === 0).map(convertNumber))
-			.addRow("PM", "", ...this.prices.slice(1).filter((e, i) => i % 2 !== 0).map(convertNumber));
+			.addRow("AM", PriceHistoryService.priceToString(this.prices[0]), ...this.prices.slice(1).filter((e, i) => i % 2 === 0).map(PriceHistoryService.priceToString))
+			.addRow("PM", "", ...this.prices.slice(1).filter((e, i) => i % 2 !== 0).map(PriceHistoryService.priceToString));
 
 		return table.toString();
 	}

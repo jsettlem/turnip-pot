@@ -18,7 +18,12 @@ export namespace Commands {
 		}
 	}
 
+	export function getOptions(validArgs: string[]) {
+		return validArgs.map(a => a + "?").join(" or ");
+	}
+
 }
 
 export * from './help'
 export * from './price'
+export * from './get'

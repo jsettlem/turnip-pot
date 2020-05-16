@@ -48,14 +48,14 @@ export class Price implements Command {
 				if (matchingDay === 0) {
 					targetTime = 0;
 				} else {
-					if (commandTime.toLowerCase().startsWith("am")) {
+					if (commandTime.toLowerCase().startsWith("a")) {
 						targetTime = matchingDay * 2 - 1;
 					} else {
 						targetTime = matchingDay * 2;
 					}
 				}
 				currentArg++;
-				if (commandTime.startsWith("am") || commandTime.startsWith("pm")) {
+				if (commandTime.startsWith("a") || commandTime.startsWith("p")) {
 					currentArg++;
 				}
 			} else {
