@@ -1,9 +1,17 @@
 import moment = require('moment')
+import {prop} from "@typegoose/typegoose";
 
 export namespace TimeService {
 
 	export class Week {
-		constructor(public year: number, public week: number) {
+		@prop()
+		public year: number;
+		@prop()
+		public week: number;
+
+		constructor(year: number, week: number) {
+			this.week = week;
+			this.year = year;
 		}
 	}
 

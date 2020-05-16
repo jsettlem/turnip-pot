@@ -3,27 +3,53 @@ import * as AsciiTable from 'ascii-table';
 import {PriceHistoryService} from "../services/priceHistoryService";
 import {Predictor} from "../predictor/ac-nh-turnip-prices/js/predictions.js"
 import Week = TimeService.Week;
+import {Snowflake} from "discord.js";
+import {arrayProp, prop} from "@typegoose/typegoose";
 
 export type Pattern = "fluctuating" | "large" | "decreasing" | "small" ;
 export const patternList: Pattern[] = ["fluctuating", "large", "decreasing", "small"]
 
 export class PriceHistory {
+	@prop()
+	userName: string;
+	@prop({index: true, unique: true})
+	userId: Snowflake;
+	@prop()
+	currentWeek: Week;
+	@prop()
+	previousPattern: Pattern | undefined;
+	@arrayProp({items: Number})
+	prices: number[];
+	@arrayProp({items: Number})
+	predictions: number[];
+
+	constructor(props) {
+		this.userName = props.userName;
+		this.userId = props.userId;
+		this.currentWeek = props.currentWeek;
+		this.previousPattern = props.previousPattern;
+		this.prices = props.prices;
+		this.predictions = props.predictions;
+	}
 
 
-	constructor(public currentWeek: Week,
-	            public previousPattern: Pattern | undefined,
-	            public prices: number[],
-	            public currentPattern: Pattern | undefined) {
+	public updateWeek() {
 		let trueCurrentWeek = TimeService.currentWeek();
+
 		if (this.currentWeek.year != trueCurrentWeek.year || this.currentWeek.week != trueCurrentWeek.week) {
-			this.previousPattern = this.currentPattern;
+			let candidatePattern = this.predictions.indexOf(100);
+			if (candidatePattern != -1) {
+				this.previousPattern = patternList[candidatePattern];
+			} else {
+				this.previousPattern = undefined;
+			}
 			this.prices = Array<number>(13).fill(0);
 			this.currentWeek = trueCurrentWeek
+			this.predict();
 		}
 	}
 
 	public predict() {
-		let table = new AsciiTable().setHeading("Pattern", "Probability");
 		let nanPrices = this.prices.map(p => p === 0 ? NaN : p)
 		let possibilities = new Predictor([nanPrices[0]].concat(nanPrices), false, patternList.indexOf(this.previousPattern)).analyze_possibilities();
 		let patternProbabilities = [0, 0, 0, 0]
@@ -34,10 +60,16 @@ export class PriceHistory {
 			} else {
 				patternProbabilities[p] = 0;
 			}
-			table.addRow(patternList[p], (patternProbabilities[p]*100).toFixed(2) + "%");
+		}
+		this.predictions = patternProbabilities;
+	}
+
+	public getPredictionTable() {
+		let table = new AsciiTable().setHeading("Pattern", "Probability");
+		for (let p of [0, 1, 2, 3]) {
+			table.addRow(patternList[p], (this.predictions[p] * 100).toFixed(2) + "%");
 		}
 		return table.toString();
-
 	}
 
 	public getProphetLink() {
@@ -45,10 +77,12 @@ export class PriceHistory {
 	}
 
 	public asASCIITable(): string {
-		let table = new AsciiTable(`Year: ${this.currentWeek.year}, Week: ${this.currentWeek.week}, Previous pattern: ${this.previousPattern ?? 'unknown'}`);
+		let table = new AsciiTable(`${this.userName} - Previous: ${this.previousPattern ?? 'unknown'}`);
+		let convertNumber = p => p === 0 ? "" : p;
 		table
-			.setHeading(...PriceHistoryService.timeNames)
-			.addRow(...this.prices.map(p => p === 0 ? "" : p));
+			.setHeading("", ...PriceHistoryService.dayNames.map(d => d.substr(0, 2)))
+			.addRow("AM", convertNumber(this.prices[0]), ...this.prices.slice(1).filter((e, i) => i % 2 === 0).map(convertNumber))
+			.addRow("PM", "", ...this.prices.slice(1).filter((e, i) => i % 2 !== 0).map(convertNumber));
 
 		return table.toString();
 	}

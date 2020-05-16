@@ -23,7 +23,7 @@ export class Price implements Command {
 			settingPrice = true;
 		} else {
 			const lowerCasePattern = args[currentArg]?.toLowerCase();
-			if (lowerCasePattern.startsWith('u')) {
+			if (lowerCasePattern?.startsWith('u')) {
 				currentArg++;
 				newPattern = undefined;
 				settingPattern = true;
@@ -78,22 +78,22 @@ export class Price implements Command {
 			targetUserId = message.author.id
 		}
 
-		let priceHistory: PriceHistory = await getPriceHistory(targetUserId);
+		let priceHistory: PriceHistory = await getPriceHistory(targetUserId, targetUserName);
 		let baseMessage: string;
 		if (settingPrice) {
 			priceHistory.prices[targetTime] = newPrice;
-			await savePriceHistory(targetUserId, priceHistory);
+			priceHistory.predict();
+			await savePriceHistory(priceHistory);
 			baseMessage = `Setting price for ${targetUserName} on ${timeNames[targetTime]} to ${newPrice}`
 		} else if (settingPattern) {
 			priceHistory.previousPattern = newPattern;
-			await savePriceHistory(targetUserId, priceHistory);
+			priceHistory.predict();
+			await savePriceHistory(priceHistory);
 			baseMessage = `Setting previous pattern for ${targetUserName} to ${newPattern}`;
 		} else {
 			baseMessage = `Getting price history for ${targetUserName}`;
 		}
 
-		message.channel.send(`${baseMessage}\n${priceHistory.getMessage()}\n\`\`\`\n${priceHistory.predict()}\`\`\``);
-		priceHistory.predict();
-
+		message.channel.send(`${baseMessage}\n${priceHistory.getMessage()}\n\`\`\`\n${priceHistory.getPredictionTable()}\`\`\``);
 	}
 }

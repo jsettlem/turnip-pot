@@ -1,37 +1,40 @@
 import {TimeService} from "./timeService";
-import * as config from "../config.json"
+import * as mongoose from "mongoose";
 
-const keyv = require('keyv');
+import * as config from "../config.json"
 import {Snowflake} from "discord.js";
+
 import {PriceHistory} from "../models/priceHistory";
+import {getModelForClass} from "@typegoose/typegoose";
+
 
 export namespace PriceHistoryService {
+
 	export const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 	export const timeNames = [dayNames[0].substr(0, 2)]
 		.concat(...dayNames.slice(1).map(d => [d.substr(0, 2) + " AM", d.substr(0, 2) + " PM"]));
 
-	const users = new keyv(config.db, {'namespace': 'priceHistory'});
+	mongoose.connect(config.db);
 
-	export async function getPriceHistory(userId: Snowflake): Promise<PriceHistory> {
-		let history: object = await users.get(userId);
-		if (history !== undefined) {
-			return new PriceHistory(history["currentWeek"],
-				history["previousPattern"],
-				history["prices"],
-				history["currentPattern"])
+	let priceHistoryModel = getModelForClass(PriceHistory);
+
+	export async function getPriceHistory(userId: Snowflake, userName: string): Promise<PriceHistory> {
+		let history = await priceHistoryModel.findOne({userId: userId});
+		if (!history) {
+			return new PriceHistory({
+				userName: userName,
+				userId: userId,
+				currentWeek: TimeService.currentWeek(),
+				previousPattern: undefined,
+				prices: Array<number>(13).fill(0),
+				predictions: [0, 0, 0, 0]
+			});
 		}
-		return new PriceHistory(
-			TimeService.currentWeek(),
-			undefined,
-			Array<number>(13).fill(0),
-			undefined
-		)
+		history.updateWeek();
+		return history;
 	}
 
-	export function savePriceHistory(userId: Snowflake, priceHistory: PriceHistory): Promise<PriceHistory> {
-		return users.set(userId, priceHistory)
+	export async function savePriceHistory(priceHistory: PriceHistory) {
+		await priceHistoryModel.findOneAndUpdate({userId: priceHistory.userId}, priceHistory, {upsert: true}).then();
 	}
-
-
-	users.set('foo', 'user');
 }
