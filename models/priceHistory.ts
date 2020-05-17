@@ -37,7 +37,7 @@ export class PriceHistory {
 		let trueCurrentWeek = TimeService.currentWeek();
 
 		if (this.currentWeek.year != trueCurrentWeek.year || this.currentWeek.week != trueCurrentWeek.week) {
-			let candidatePattern = this.predictions.indexOf(100);
+			let candidatePattern = this.predictions.indexOf(1);
 			if (candidatePattern != -1) {
 				this.previousPattern = patternList[candidatePattern];
 			} else {
