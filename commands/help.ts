@@ -6,7 +6,7 @@ import commandMap = Commands.commandMap;
 @Commands.register("help")
 export class Help implements Command {
 	public execute(message: Message, args: string[]) {
-		let helpMessage = "Possible commands:\n";
+		let helpMessage = "Your friendly neighborhood turnip-pot. Code on GitHub: <https://github.com/jsettlem/turnip-pot>\n";
 		for (let command of commandList) {
 			helpMessage += `__**${command}:**__\n`;
 			helpMessage += commandMap[command].getHelp() + "\n";
