@@ -37,7 +37,10 @@ export class Get implements Command {
 				table.setHeading("User", ...patternList, "large ∨ small", "dec ∨ fluc");
 				let formatPercent = p => (p * 100).toFixed(2) + "%";
 				for (let history of priceHistories) {
-					let predictions = [...history.predictions, history.predictions[1] + history.predictions[3], history.predictions[0] + history.predictions[2]]
+					let predictions = [...history.predictions,
+						history.predictions[1] + history.predictions[3],
+						history.predictions[0] + history.predictions[2]
+					]
 					table.addRow(history.userName, ...predictions.map(formatPercent));
 					chances_none = chances_none.map((c, i) => (1 - predictions[i]) * c);
 					chances_all = chances_all.map((c, i) => predictions[i] * c);

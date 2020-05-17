@@ -11,10 +11,12 @@ export namespace Commands {
 	}
 
 	export let commandMap: { [keyword: string]: Command } = {};
+	export let commandList = [];
 
 	export function register(keyword: string) {
 		return function <T extends Constructor<Command>>(constructor: T) {
 			commandMap[keyword] = new constructor();
+			commandList.push(keyword);
 		}
 	}
 

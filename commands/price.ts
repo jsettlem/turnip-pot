@@ -7,6 +7,7 @@ import {TimeService} from "../services/timeService";
 import savePriceHistory = PriceHistoryService.savePriceHistory;
 import dayNames = PriceHistoryService.dayNames;
 import timeNames = PriceHistoryService.timeNames;
+import getOptions = Commands.getOptions;
 
 @Commands.register("price")
 export class Price implements Command {
@@ -40,24 +41,27 @@ export class Price implements Command {
 
 		let targetTime: number;
 		if (settingPrice) {
-			let commandDay = args[currentArg] ?? "";
-			let commandTime = args[currentArg + 1] ?? "";
-			let matchingDays = dayNames.filter(d => d.toLowerCase().startsWith(commandDay.toLowerCase()));
+			let commandDay: string = args[currentArg];
+			let commandTime = args[currentArg + 1];
+			let matchingDays = dayNames.filter(d => d.toLowerCase().startsWith(commandDay?.toLowerCase()));
 			if (matchingDays.length === 1) {
 				let matchingDay = dayNames.indexOf(matchingDays[0]);
 				if (matchingDay === 0) {
 					targetTime = 0;
 				} else {
-					if (commandTime.toLowerCase().startsWith("a")) {
+					if (commandTime?.toLowerCase()?.startsWith("a")) {
 						targetTime = matchingDay * 2 - 1;
 					} else {
 						targetTime = matchingDay * 2;
 					}
 				}
 				currentArg++;
-				if (commandTime.startsWith("a") || commandTime.startsWith("p")) {
+				if (commandTime?.startsWith("a") || commandTime?.startsWith("p")) {
 					currentArg++;
 				}
+			} else if (matchingDays.length > 1) {
+				message.channel.send(`Did you mean ${getOptions(matchingDays)}`)
+				return;
 			} else {
 				targetTime = TimeService.getCurrentTime()
 			}

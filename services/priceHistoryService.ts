@@ -17,7 +17,7 @@ export namespace PriceHistoryService {
 	export const timeNames = [dayNames[0].substr(0, 2)]
 		.concat(...dayNames.slice(1).map(d => [d.substr(0, 2) + " AM", d.substr(0, 2) + " PM"]));
 
-	mongoose.connect(config.db);
+	mongoose.connect(process.env.DB);
 
 	let priceHistoryModel = getModelForClass(PriceHistory);
 

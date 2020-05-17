@@ -1,8 +1,9 @@
 import {Client, Message} from "discord.js";
-import * as secret from "./secret.json"
 import {prefix} from "./config.json";
 import {Commands} from "./commands/command";
 import commandMap = Commands.commandMap;
+import commandList = Commands.commandList;
+import getOptions = Commands.getOptions;
 
 const client: Client = new Client();
 
@@ -12,8 +13,13 @@ function processMessage(message: Message) {
 	const args = message.content.slice(prefix.length).split(/ +/);
 	const command = args.shift().toLowerCase();
 
-	if (command in commandMap) {
-		commandMap[command].execute(message, args);
+	let possibleCommands = commandList.filter(c => c.startsWith(command.toLowerCase()));
+	if (possibleCommands.length === 1) {
+		commandMap[possibleCommands[0]].execute(message, args);
+	} else if (possibleCommands.length === 0) {
+		message.channel.send(`Unknown command. Did you mean ${getOptions(commandList.map(c => prefix + c))}`);
+	} else {
+		message.channel.send(`Did you mean ${getOptions(possibleCommands.map(c => prefix + c))}`)
 	}
 }
 
@@ -29,4 +35,5 @@ client.on('messageUpdate', (oldMessage, newMessage) => {
 	}
 });
 
-client.login(secret.token)
+console.log(process.env.DISCORD_TOKEN)
+client.login(process.env.DISCORD_TOKEN)

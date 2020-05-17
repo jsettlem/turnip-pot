@@ -4,7 +4,8 @@
   "description": "",
   "main": "dist/app.js",
   "scripts": {
-    "start": "tsc && node dist/app.js",
+    "start-prod": "tsc --outdir dst-prod && node dst-prod/app.js",
+    "start-dev": "tsc --outdir dst-dev && node dst-dev/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
