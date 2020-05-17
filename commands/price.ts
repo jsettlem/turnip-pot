@@ -100,4 +100,12 @@ export class Price implements Command {
 
 		message.channel.send(`${baseMessage}\n${priceHistory.getMessage()}\n\`\`\`\n${priceHistory.getPredictionTable()}\`\`\``);
 	}
+
+	public getHelp(): string {
+		return "`!price`: shows your price history for the current week\n" +
+			"`!price 99`: sets your price for today (eastern time)\n" +
+			"`!price 99 Monday PM`: sets your price for a specific day and time\n" +
+			"`!price " + patternList.join("|") + "`: sets your previous week pattern\n" +
+			"`!price @pimanrules`: runs the corresponding price command against a different user";
+	}
 }

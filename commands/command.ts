@@ -1,7 +1,8 @@
 import {Message} from "discord.js";
 
 export interface Command {
-	execute(message: Message, args: string[])
+	execute(message: Message, args: string[]);
+	getHelp(): string;
 }
 
 export namespace Commands {

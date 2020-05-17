@@ -53,4 +53,9 @@ export class Get implements Command {
 			}
 		}
 	}
+
+	getHelp(): string {
+		return "`!get prices`: shows a chart of everyone's prices for the current week\n" +
+			"`!get predictions`: shows a summary of predictions for the current week";
+	}
 }
