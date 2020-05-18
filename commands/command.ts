@@ -30,3 +30,4 @@ export namespace Commands {
 export * from './help'
 export * from './price'
 export * from './get'
+export * from './bug'

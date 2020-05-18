@@ -14,6 +14,8 @@ export namespace PriceHistoryService {
 	import Week = TimeService.Week;
 
 	export const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+	export const longTimeNames = [dayNames[0]]
+		.concat(...dayNames.slice(1).map(d => [d + " morning", d + " afternoon"]));
 	export const timeNames = [dayNames[0].substr(0, 2)]
 		.concat(...dayNames.slice(1).map(d => [d.substr(0, 2) + " AM", d.substr(0, 2) + " PM"]));
 

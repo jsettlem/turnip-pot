@@ -6,8 +6,8 @@ import getPriceHistory = PriceHistoryService.getPriceHistory;
 import {TimeService} from "../services/timeService";
 import savePriceHistory = PriceHistoryService.savePriceHistory;
 import dayNames = PriceHistoryService.dayNames;
-import timeNames = PriceHistoryService.timeNames;
 import getOptions = Commands.getOptions;
+import longTimeNames = PriceHistoryService.longTimeNames;
 
 @Commands.register("price")
 export class Price implements Command {
@@ -88,7 +88,7 @@ export class Price implements Command {
 			priceHistory.prices[targetTime] = newPrice;
 			priceHistory.predict();
 			await savePriceHistory(priceHistory);
-			baseMessage = `Setting price for ${targetUserName} on ${timeNames[targetTime]} to ${newPrice}`
+			baseMessage = `Setting price for ${targetUserName} on ${longTimeNames[targetTime]} to ${newPrice}`
 		} else if (settingPattern) {
 			priceHistory.previousPattern = newPattern;
 			priceHistory.predict();
