@@ -18,6 +18,7 @@ export class Bug implements Command {
 		} else {
 			message.channel.send(`${priceCheckMessage} ${priceHistories
 				.filter(h => h.prices[currentTime] === 0 && !h.userId.startsWith("@"))
+				.filter(h => h.predictions[0] < 0.999 && h.predictions[2] < 0.999)
 				.map(h => "<@" + h.userId + ">!")
 				.join(" ")}`
 			)
