@@ -1,7 +1,7 @@
 import {Message} from "discord.js";
 
 export interface Command {
-	execute(message: Message, args: string[]);
+	execute(message: Message, args: string[]): void;
 	getHelp(): string;
 }
 
@@ -12,7 +12,7 @@ export namespace Commands {
 	}
 
 	export let commandMap: { [keyword: string]: Command } = {};
-	export let commandList = [];
+	export let commandList: string[] = [];
 
 	export function register(keyword: string) {
 		return function <T extends Constructor<Command>>(constructor: T) {

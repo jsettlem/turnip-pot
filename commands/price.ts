@@ -14,7 +14,7 @@ export class Price implements Command {
 	public async execute(message: Message, args: string[]) {
 
 		let currentArg = 0
-		let newPattern: Pattern;
+		let newPattern: Pattern | undefined;
 		let newPrice = parseInt(args[currentArg])
 		let settingPattern: boolean = false;
 		let settingPrice: boolean = false;
@@ -67,13 +67,13 @@ export class Price implements Command {
 			}
 		}
 
-		let targetUserName: string;
-		let targetUserId: string;
+		let targetUserName: string | undefined;
+		let targetUserId: string | undefined;
 
-		if (message.mentions.members.size) {
-			let targetUser = message.mentions.members.first().user;
-			targetUserName = targetUser.username;
-			targetUserId = targetUser.id
+		if (message.mentions.members?.size) {
+			let targetUser = message.mentions.members.first()?.user;
+			targetUserName = targetUser?.username;
+			targetUserId = targetUser?.id
 		} else if (args[currentArg]?.startsWith("@")) {
 			targetUserName = args[currentArg];
 			targetUserId = args[currentArg];
