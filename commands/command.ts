@@ -22,7 +22,7 @@ export namespace Commands {
 	}
 
 	export function getOptions(validArgs: string[]) {
-		return validArgs.map(a => a + "?").join(" or ");
+		return validArgs.map(a =>"`" + a + "`?").join(" or ");
 	}
 
 }
