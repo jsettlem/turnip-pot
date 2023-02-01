@@ -20,7 +20,7 @@
     "ascii-table": "0.0.9",
     "discord.js": "^12.2.0",
     "moment": "^2.25.3",
-    "mongoose": "^5.9.14",
+    "mongoose": "^5.13.15",
     "@typegoose/typegoose": "^7.1.0"
   }
 }
